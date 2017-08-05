@@ -1,11 +1,11 @@
 local utils = require("mp.utils")
 
 local function create_chapter()
-	local time_pos = mp.get_property_number("time-pos")
-	local time_pos_osd = mp.get_property_osd("time-pos/full")
-	local curr_chapter = mp.get_property_number("chapter")
-	local chapter_count = mp.get_property_number("chapter-list/count")
-	local all_chapters = mp.get_property_native("chapter-list")
+    local time_pos = mp.get_property_number("time-pos")
+    local time_pos_osd = mp.get_property_osd("time-pos/full")
+    local curr_chapter = mp.get_property_number("chapter")
+    local chapter_count = mp.get_property_number("chapter-list/count")
+    local all_chapters = mp.get_property_native("chapter-list")
     mp.osd_message(time_pos_osd, 1)
 
     if chapter_count == 0 then
@@ -14,19 +14,19 @@ local function create_chapter()
             time = time_pos
         }
         -- We just set it to zero here so when we add 1 later it ends up as 1
-		-- otherwise it's probably "nil"
+        -- otherwise it's probably "nil"
         curr_chapter = 0
-		-- note that mpv will treat the beginning of the file as all_chapters[0] when using pageup/pagedown
-		-- so we don't actually have to worry if the file doesn't start with a chapter
+        -- note that mpv will treat the beginning of the file as all_chapters[0] when using pageup/pagedown
+        -- so we don't actually have to worry if the file doesn't start with a chapter
     else
         -- to insert a chapter we have to increase the index on all subsequent chapters
-		-- otherwise we'll end up with duplicate chapter IDs which will confuse mpv
-		-- +2 looks weird, but remember mpv indexes at 0 and lua indexes at 1
-		-- adding two will turn "current chapter" from mpv notation into "next chapter" from lua's notation
-		-- count down because these areas of memory overlap
+        -- otherwise we'll end up with duplicate chapter IDs which will confuse mpv
+        -- +2 looks weird, but remember mpv indexes at 0 and lua indexes at 1
+        -- adding two will turn "current chapter" from mpv notation into "next chapter" from lua's notation
+        -- count down because these areas of memory overlap
         for i = chapter_count, curr_chapter + 2, -1 do
-			all_chapters[i + 1] = all_chapters[i]
-		end
+            all_chapters[i + 1] = all_chapters[i]
+        end
         all_chapters[curr_chapter+2] = {
             title = tostring(math.floor(time_pos)),
             time = time_pos
@@ -52,8 +52,8 @@ end
 
 local function write_chapter()
     local euid = mp.get_property_number("estimated-frame-count")
-	local chapter_count = mp.get_property_number("chapter-list/count")
-	local all_chapters = mp.get_property_native("chapter-list")
+    local chapter_count = mp.get_property_number("chapter-list/count")
+    local all_chapters = mp.get_property_native("chapter-list")
     local insert_chapters = ""
     local curr = nil
 
@@ -62,11 +62,11 @@ local function write_chapter()
         local time_pos = format_time(curr.time)
 
         if i == 1 and curr.time ~= 0 then
-	        local first_chapter="    <ChapterAtom>\n      <ChapterUID>9876</ChapterUID>\n      <ChapterFlagHidden>0</ChapterFlagHidden>\n      <ChapterFlagEnabled>1</ChapterFlagEnabled>\n      <ChapterDisplay>\n        <ChapterString>Prologue</ChapterString>\n        <ChapterLanguage>eng</ChapterLanguage>\n      </ChapterDisplay>\n      <ChapterTimeStart>00:00:00.000</ChapterTimeStart>\n    </ChapterAtom>\n"
+            local first_chapter="    <ChapterAtom>\n      <ChapterUID>9876</ChapterUID>\n      <ChapterFlagHidden>0</ChapterFlagHidden>\n      <ChapterFlagEnabled>1</ChapterFlagEnabled>\n      <ChapterDisplay>\n        <ChapterString>Prologue</ChapterString>\n        <ChapterLanguage>eng</ChapterLanguage>\n      </ChapterDisplay>\n      <ChapterTimeStart>00:00:00.000</ChapterTimeStart>\n    </ChapterAtom>\n"
             insert_chapters = insert_chapters..first_chapter
         end
 
-	    local next_chapter="      <ChapterAtom>\n        <ChapterDisplay>\n          <ChapterString>"..curr.title.."</ChapterString>\n          <ChapterLanguage>eng</ChapterLanguage>\n        </ChapterDisplay>\n        <ChapterUID>"..curr.title.."</ChapterUID>\n        <ChapterTimeStart>"..time_pos.."</ChapterTimeStart>\n        <ChapterFlagHidden>0</ChapterFlagHidden>\n        <ChapterFlagEnabled>1</ChapterFlagEnabled>\n      </ChapterAtom>\n"
+        local next_chapter="      <ChapterAtom>\n        <ChapterDisplay>\n          <ChapterString>"..curr.title.."</ChapterString>\n          <ChapterLanguage>eng</ChapterLanguage>\n        </ChapterDisplay>\n        <ChapterUID>"..curr.title.."</ChapterUID>\n        <ChapterTimeStart>"..time_pos.."</ChapterTimeStart>\n        <ChapterFlagHidden>0</ChapterFlagHidden>\n        <ChapterFlagEnabled>1</ChapterFlagEnabled>\n      </ChapterAtom>\n"
         insert_chapters = insert_chapters..next_chapter
     end
 
