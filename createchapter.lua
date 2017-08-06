@@ -10,7 +10,7 @@ local function create_chapter()
 
     if chapter_count == 0 then
         all_chapters[1] = {
-            title = tostring(math.floor(time_pos)),
+            title = "chapter_1",
             time = time_pos
         }
         -- We just set it to zero here so when we add 1 later it ends up as 1
@@ -28,7 +28,7 @@ local function create_chapter()
             all_chapters[i + 1] = all_chapters[i]
         end
         all_chapters[curr_chapter+2] = {
-            title = tostring(math.floor(time_pos)),
+            title = "chapter_"..curr_chapter,
             time = time_pos
         }
     end
