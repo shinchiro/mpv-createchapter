@@ -77,6 +77,15 @@ local function write_chapter()
     local name = string.sub(name_ext, 1, (string.len(name_ext)-4))
     local out_path = utils.join_path(dir, name.."_chapter.xml")
     local file = io.open(out_path, "w")
+    if file == nil then
+        dir = utils.getcwd()
+        out_path = utils.join_path(dir, "create_chapter.xml")
+        file = io.open(out_path, "w")
+    end
+    if file == nil then
+        mp.error("Could not open chapter file for writing.")
+        return
+    end
     file:write(chapters)
     file:close()
     mp.osd_message("Export file to: "..out_path, 3)
